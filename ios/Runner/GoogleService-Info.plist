@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>104229536375-7pneavt2cjepmru7fn6e2pfu2u3pj801.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.104229536375-7pneavt2cjepmru7fn6e2pfu2u3pj801</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBkhz8GAq-Sc0pbC45g2eavEyKI_ozTPaw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>104229536375</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.flashiClient</string>
+	<key>PROJECT_ID</key>
+	<string>flashi-13c9b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>flashi-13c9b.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:104229536375:ios:fd5e7f2155dc68e040bc72</string>
+	<key>DATABASE_URL</key>
+	<string>https://flashi-13c9b-default-rtdb.europe-west1.firebasedatabase.app</string>
+</dict>
+</plist>

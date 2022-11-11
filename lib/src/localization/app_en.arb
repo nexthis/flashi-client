@@ -1,0 +1,6 @@
+{
+  "appTitle": "flashi_clien",
+  "@appTitle": {
+    "description": "The title of the application"
+  }
+}

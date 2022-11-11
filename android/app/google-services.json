@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "104229536375",
+    "firebase_url": "https://flashi-13c9b-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "flashi-13c9b",
+    "storage_bucket": "flashi-13c9b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:104229536375:android:e8a488f19cee73a540bc72",
+        "android_client_info": {
+          "package_name": "com.example.flashi_client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "104229536375-skftb4g7a7s35348u5besnr2rehi7757.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkiylTqnH_7XxUM9NT8S0u8v4j0XHmBK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "104229536375-skftb4g7a7s35348u5besnr2rehi7757.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "104229536375-7pneavt2cjepmru7fn6e2pfu2u3pj801.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flashiClient"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
