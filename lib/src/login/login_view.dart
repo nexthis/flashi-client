@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import '../services/auth.dart';
 import '../settings/settings_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -14,10 +15,12 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   void dispose() {
     emailController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
@@ -83,18 +86,23 @@ class _LoginViewState extends State<LoginView> {
                   decoration: const InputDecoration(label: Text("Name/Email")),
                 ),
                 TextField(
-                  controller: emailController,
+                  controller: passwordController,
+                  obscureText: true,
+                  enableSuggestions: false,
+                  autocorrect: false,
                   decoration: const InputDecoration(label: Text("Password")),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () => {},
+                  onPressed: () => {
+                    AuthService().login(
+                        this.emailController.text, this.passwordController.text)
+                  },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(50),
                   ),
                   child: const Text("Login", style: TextStyle(fontSize: 18)),
                 ),
-                const Text("Create")
               ],
             ),
           )),
