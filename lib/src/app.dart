@@ -1,7 +1,10 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flashi_client/src/dashboard/dashboard_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
@@ -11,7 +14,7 @@ import 'settings/settings_view.dart';
 import 'themes/base.dart';
 
 /// The Widget that configures your application.
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({
     super.key,
     required this.settingsController,
@@ -20,13 +23,38 @@ class MyApp extends StatelessWidget {
   final SettingsController settingsController;
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late StreamSubscription<User?> _sub;
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _sub = FirebaseAuth.instance.userChanges().listen((event) {
+      _navigatorKey.currentState?.pushReplacementNamed(
+        event != null ? DashboardView.routeName : LoginView.routeName,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Glue the SettingsController to the MaterialApp.
     //
     // The AnimatedBuilder Widget listens to the SettingsController for changes.
     // Whenever the user updates their settings, the MaterialApp is rebuilt.
     return AnimatedBuilder(
-      animation: settingsController,
+      animation: widget.settingsController,
       builder: (BuildContext context, Widget? child) {
         return MaterialApp(
           // Providing a restorationScopeId allows the Navigator built by the
@@ -61,8 +89,12 @@ class MyApp extends StatelessWidget {
           // SettingsController to display the correct theme.
           theme: BaseTheme.themeData(BaseTheme.whiteColorScheme),
           darkTheme: BaseTheme.themeData(BaseTheme.darkColorScheme),
-          themeMode: settingsController.themeMode,
+          themeMode: widget.settingsController.themeMode,
 
+          navigatorKey: _navigatorKey,
+          initialRoute: FirebaseAuth.instance.currentUser == null
+              ? LoginView.routeName
+              : DashboardView.routeName,
           // Define a function to handle named routes in order to support
           // Flutter web url navigation and deep linking.
           onGenerateRoute: (RouteSettings routeSettings) {
@@ -70,15 +102,17 @@ class MyApp extends StatelessWidget {
               settings: routeSettings,
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
+                  case DashboardView.routeName:
+                    return const DashboardView();
                   case SettingsView.routeName:
-                    return SettingsView(controller: settingsController);
+                    return SettingsView(controller: widget.settingsController);
                   case SampleItemDetailsView.routeName:
                     return const SampleItemDetailsView();
                   case LoginView.routeName:
                     return const LoginView();
                   case SampleItemListView.routeName:
                   default:
-                    return const LoginView();
+                    return const DashboardView();
                 }
               },
             );

@@ -1,3 +1,4 @@
+import 'package:flashi_client/src/login/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -14,6 +15,7 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  final controller = LoginController(AuthService());
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -55,26 +57,35 @@ class _LoginViewState extends State<LoginView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.facebook, size: 35),
+                      icon: const Icon(Icons.facebook,
+                          size: 35, color: Colors.white),
                       style: IconButton.styleFrom(
                           backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.all(15),
+                          padding: const EdgeInsets.all(10),
                           shape: const CircleBorder()),
                       onPressed: () => {},
                     ),
+                    const SizedBox(
+                      width: 10,
+                    ),
                     IconButton(
-                      icon: const Icon(Icons.g_mobiledata, size: 35),
+                      icon: const Icon(Icons.g_mobiledata,
+                          size: 35, color: Colors.white),
                       style: IconButton.styleFrom(
                           backgroundColor: Colors.red,
-                          padding: const EdgeInsets.all(15),
+                          padding: const EdgeInsets.all(10),
                           shape: const CircleBorder()),
                       onPressed: () => {},
                     ),
+                    const SizedBox(
+                      width: 10,
+                    ),
                     IconButton(
-                      icon: const Icon(Icons.g_mobiledata, size: 35),
+                      icon: const Icon(Icons.g_mobiledata,
+                          size: 35, color: Colors.white),
                       style: IconButton.styleFrom(
                           backgroundColor: Colors.grey,
-                          padding: const EdgeInsets.all(15),
+                          padding: const EdgeInsets.all(10),
                           shape: const CircleBorder()),
                       onPressed: () => {},
                     ),
@@ -83,7 +94,7 @@ class _LoginViewState extends State<LoginView> {
                 const SizedBox(height: 20),
                 TextField(
                   controller: emailController,
-                  decoration: const InputDecoration(label: Text("Name/Email")),
+                  decoration: const InputDecoration(label: Text("Email")),
                 ),
                 TextField(
                   controller: passwordController,
@@ -95,8 +106,8 @@ class _LoginViewState extends State<LoginView> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () => {
-                    AuthService().login(
-                        this.emailController.text, this.passwordController.text)
+                    controller.login(
+                        emailController.text, passwordController.text)
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(50),
@@ -124,8 +135,8 @@ class _ViewContainer extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Align(
           alignment: Alignment.center,
-          child: FractionallySizedBox(
-            heightFactor: 0.6,
+          child: SizedBox(
+            height: 450,
             child: Card(
               child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
