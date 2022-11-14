@@ -1,13 +1,13 @@
-name: flashi_client
-description: A new Flutter project.
+name: Flashi
+description: A new way to manage your devices!
 
 # Prevent accidental publishing to pub.dev.
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.4 <3.0.0'
+  sdk: ">=2.18.4 <3.0.0"
 
 dependencies:
   firebase_auth: ^4.1.1
@@ -21,8 +21,13 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: "^0.10.0"
   flutter_lints: ^2.0.0
+
+flutter_icons:
+  image_path: "assets/icons/app.png"
+  android: true
+  ios: true
 
 flutter:
   uses-material-design: true
