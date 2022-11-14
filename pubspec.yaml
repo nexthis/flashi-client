@@ -1,4 +1,4 @@
-name: Flashi
+name: flashi_client
 description: A new way to manage your devices!
 
 # Prevent accidental publishing to pub.dev.
