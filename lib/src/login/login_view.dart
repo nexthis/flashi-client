@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import '../services/auth.dart';
-import '../settings/settings_view.dart';
+import '../main/example/settings_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -30,20 +30,6 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Auth'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              // Navigate to the settings page. If the user leaves and returns
-              // to the app after it has been killed while running in the
-              // background, the navigation stack is restored.
-              Navigator.restorablePushNamed(context, SettingsView.routeName);
-            },
-          ),
-        ],
-      ),
       body: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: _ViewContainer(

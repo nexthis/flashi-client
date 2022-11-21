@@ -1,16 +1,15 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flashi_client/src/dashboard/dashboard_view.dart';
+import 'package:flashi_client/src/main/dashboard/dashboard_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'sample_feature/sample_item_details_view.dart';
-import 'sample_feature/sample_item_list_view.dart';
 import 'login/login_view.dart';
-import 'settings/settings_controller.dart';
-import 'settings/settings_view.dart';
+import 'main/main_view.dart';
+import 'main/example/settings_controller.dart';
+import 'main/example/settings_view.dart';
 import 'themes/base.dart';
 
 /// The Widget that configures your application.
@@ -36,7 +35,7 @@ class _MyAppState extends State<MyApp> {
 
     _sub = FirebaseAuth.instance.userChanges().listen((event) {
       _navigatorKey.currentState?.pushReplacementNamed(
-        event != null ? DashboardView.routeName : LoginView.routeName,
+        event != null ? MainView.routeName : LoginView.routeName,
       );
     });
   }
@@ -94,7 +93,7 @@ class _MyAppState extends State<MyApp> {
           navigatorKey: _navigatorKey,
           initialRoute: FirebaseAuth.instance.currentUser == null
               ? LoginView.routeName
-              : DashboardView.routeName,
+              : MainView.routeName,
           // Define a function to handle named routes in order to support
           // Flutter web url navigation and deep linking.
           onGenerateRoute: (RouteSettings routeSettings) {
@@ -102,15 +101,12 @@ class _MyAppState extends State<MyApp> {
               settings: routeSettings,
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
-                  case DashboardView.routeName:
-                    return const DashboardView();
-                  case SettingsView.routeName:
-                    return SettingsView(controller: widget.settingsController);
-                  case SampleItemDetailsView.routeName:
-                    return const SampleItemDetailsView();
+                  case MainView.routeName:
+                    return const MainView();
+                  case TestView.routeName:
+                    return TestView(controller: widget.settingsController);
                   case LoginView.routeName:
                     return const LoginView();
-                  case SampleItemListView.routeName:
                   default:
                     return const DashboardView();
                 }

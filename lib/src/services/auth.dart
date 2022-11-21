@@ -1,6 +1,6 @@
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:developer';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   final userStream = FirebaseAuth.instance.authStateChanges();
@@ -10,7 +10,7 @@ class AuthService {
     var test = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
 
-    log('movieTitle: $test');
+    debugPrint('movieTitle: $test');
 
     return test;
   }
