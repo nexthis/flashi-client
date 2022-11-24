@@ -22,11 +22,14 @@ class MacrosView extends StatelessWidget {
             return Center(child: Container());
           } else if (snapshot.hasData) {
             var macros = snapshot.data!;
-            return ListView.builder(
-              itemCount: macros.length,
-              itemBuilder: (context, index) {
-                return MacroItem(macro: macros[index]);
-              },
+            return RefreshIndicator(
+              child: ListView.builder(
+                itemCount: macros.length,
+                itemBuilder: (context, index) {
+                  return MacroItem(macro: macros[index]);
+                },
+              ),
+              onRefresh: () => Future.delayed(const Duration(seconds: 1)),
             );
           } else {
             return const Text(
