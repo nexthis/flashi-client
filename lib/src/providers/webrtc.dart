@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flashi_client/src/services/device_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-import 'models.dart';
+import '../services/models.dart';
 
 Map<String, dynamic> _connectionConfiguration = {
   'iceServers': [
@@ -19,16 +22,23 @@ const _offerAnswerConstraints = {
   'optional': [],
 };
 
-class WebRtcService {
+class WebRtcProvider with ChangeNotifier {
   final _db = FirebaseFirestore.instance;
   final _user = FirebaseAuth.instance.currentUser;
   late RTCDataChannel _dataChannel;
   late RTCPeerConnection _connection;
   late RTCSessionDescription _sdp;
   String _serverKey = "";
+  String _clientKey = "";
+  RTCPeerConnectionState _state =
+      RTCPeerConnectionState.RTCPeerConnectionStateNew;
+
+  RTCPeerConnectionState get state => _state;
 
   Future<void> initPeerConnection() async {
+    var device = await DeviceInfo().registry();
     _connection = await createPeerConnection(_connectionConfiguration);
+    _clientKey = device.key;
 
     // On local ice candidate add
     _connection.onIceCandidate = (candidate) {
@@ -40,7 +50,7 @@ class WebRtcService {
         "sdpMid": candidate.sdpMid,
         "type": "ice",
         "server": _serverKey,
-        "client": "clientKey",
+        "client": _clientKey,
         "createdAt": FieldValue.serverTimestamp(),
       };
       _db.collection("users/${_user!.uid}/server").add(data);
@@ -50,18 +60,16 @@ class WebRtcService {
     _connection.onDataChannel = (channel) {
       debugPrint("onDataChannel");
     };
-  }
 
-  Future<void> connect() async {
-    _serverKey =
-        "690a9efd319b827598386ce3be6eefd49a1fb01ed3d747426838859888b9b0fc";
+    _connection.onConnectionState = (state) {
+      _state = state;
+      notifyListeners();
+    };
 
-    await _createDataChannel();
-    await _createOffer();
     var collection = _db.collection("users/${_user!.uid}/client");
 
     collection
-        .where("client", isEqualTo: "clientKey")
+        .where("client", isEqualTo: _clientKey)
         .where("createdAt", isGreaterThan: Timestamp.now())
         .snapshots()
         .listen((event) {
@@ -93,6 +101,22 @@ class WebRtcService {
     });
   }
 
+  Future<void> connect(Device device) async {
+    _serverKey = device.key;
+    await _createDataChannel();
+    await _createOffer();
+  }
+
+  Future<void> disconnect() async {
+    _dataChannel.close();
+    _connection.close();
+  }
+
+  Future<void> send(String text) async {
+    _dataChannel.send(RTCDataChannelMessage.fromBinary(
+        Uint8List.fromList(utf8.encode(text))));
+  }
+
   Future<void> _createOffer() async {
     RTCSessionDescription offer =
         await _connection.createOffer(_offerAnswerConstraints);
@@ -103,7 +127,7 @@ class WebRtcService {
       "sdp": offer.sdp,
       "type": offer.type,
       "server": _serverKey,
-      "client": "clientKey",
+      "client": _clientKey,
       "createdAt": FieldValue.serverTimestamp(),
     };
 

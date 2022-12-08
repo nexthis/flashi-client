@@ -1,4 +1,4 @@
-import 'package:flashi_client/src/services/webrtc.dart';
+import 'package:flashi_client/src/widgets/connect_button.dart';
 import 'package:flutter/material.dart';
 
 class DashboardView extends StatelessWidget {
@@ -8,17 +8,12 @@ class DashboardView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('DashboardView'),
+        title: const Text('Dashboard'),
+        actions: const <Widget>[
+          ConnectionButton(),
+        ],
       ),
-      body: Container(
-        child: MaterialButton(
-            onPressed: () async {
-              var testService = WebRtcService();
-              await testService.initPeerConnection();
-              await testService.connect();
-            },
-            child: const Text("Test")),
-      ),
+      body: Container(),
     );
   }
 }

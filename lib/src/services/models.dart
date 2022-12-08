@@ -33,3 +33,22 @@ class WebRtcIceCandidate {
       _$WebRtcIceCandidateFromJson(json);
   Map<String, dynamic> toJson() => _$WebRtcIceCandidateToJson(this);
 }
+
+@JsonSerializable()
+class Device {
+  String key;
+  String name;
+  String os;
+  String type;
+  bool? active;
+  Device(
+      {required this.key,
+      required this.name,
+      required this.os,
+      this.active,
+      this.type = "client"});
+
+  factory Device.fromJson(Map<String, dynamic> json) => _$DeviceFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DeviceToJson(this);
+}

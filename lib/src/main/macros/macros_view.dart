@@ -3,6 +3,10 @@ import 'package:flashi_client/src/services/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flashi_client/src/widgets/connect_button.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/webrtc.dart';
 
 class MacrosView extends StatelessWidget {
   const MacrosView({super.key});
@@ -12,6 +16,9 @@ class MacrosView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Macros'),
+        actions: const <Widget>[
+          ConnectionButton(),
+        ],
       ),
       body: FutureBuilder<List<Macro>>(
         future: FirestoreService().macros(),
@@ -68,7 +75,9 @@ class MacroItem extends StatelessWidget {
                   icon: const Icon(Icons.remove_red_eye)),
               IconButton(
                   style: buttonStyle,
-                  onPressed: () => true,
+                  onPressed: () {
+                    context.read<WebRtcProvider>().send(macro.code);
+                  },
                   icon: const Icon(Icons.play_arrow)),
             ],
           )

@@ -1,6 +1,13 @@
+import 'dart:ui';
+
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flashi_client/src/providers/webrtc.dart';
+import 'package:flashi_client/src/services/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'src/app.dart';
@@ -13,19 +20,29 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  FirestoreService().registry();
   // Ideal time to initialize
   //await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
 
-  // Set up the SettingsController, which will glue user settings to multiple
-  // Flutter Widgets.
-  final settingsController = SettingsController(SettingsService());
+  final web_rtc = WebRtcProvider();
+  await web_rtc.initPeerConnection();
 
-  // Load the user's preferred theme while the splash screen is displayed.
-  // This prevents a sudden theme change when the app is first displayed.
-  await settingsController.loadSettings();
+  FirebaseAnalytics.instance.logAppOpen();
+
+  // Pass all uncaught "fatal" errors from the framework to Crashlytics
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 
   // Run the app and pass in the SettingsController. The app listens to the
   // SettingsController for changes, then passes it further down to the
   // SettingsView.
-  runApp(MyApp(settingsController: settingsController));
+  runApp(MultiProvider(
+    providers: [ChangeNotifierProvider(create: (_) => web_rtc)],
+    child: const MyApp(),
+  ));
 }

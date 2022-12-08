@@ -43,3 +43,19 @@ Map<String, dynamic> _$WebRtcIceCandidateToJson(WebRtcIceCandidate instance) =>
       'sdpMLineIndex': instance.sdpMLineIndex,
       'sdpMid': instance.sdpMid,
     };
+
+Device _$DeviceFromJson(Map<String, dynamic> json) => Device(
+      key: json['key'] as String,
+      name: json['name'] as String,
+      os: json['os'] as String,
+      active: json['active'] as bool?,
+      type: json['type'] as String? ?? "client",
+    );
+
+Map<String, dynamic> _$DeviceToJson(Device instance) => <String, dynamic>{
+      'key': instance.key,
+      'name': instance.name,
+      'os': instance.os,
+      'type': instance.type,
+      'active': instance.active,
+    };
