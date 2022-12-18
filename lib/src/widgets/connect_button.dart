@@ -120,9 +120,11 @@ class ConnectionButton extends StatelessWidget {
         RTCPeerConnectionState.RTCPeerConnectionStateConnecting) {
       text = "Connecting";
     }
+
     if (value.state == RTCPeerConnectionState.RTCPeerConnectionStateFailed) {
       text = "Failed";
     }
+    
     if (value.state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
       text = "Connected";
     }

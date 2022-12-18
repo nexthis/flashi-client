@@ -37,34 +37,7 @@ class WebRtcProvider with ChangeNotifier {
 
   Future<void> initPeerConnection() async {
     var device = await DeviceInfo().registry();
-    _connection = await createPeerConnection(_connectionConfiguration);
     _clientKey = device.key;
-
-    // On local ice candidate add
-    _connection.onIceCandidate = (candidate) {
-      debugPrint("onIceCandidate: ${candidate.sdpMid}");
-
-      var data = {
-        "candidate": candidate.candidate,
-        "sdpMLineIndex": candidate.sdpMLineIndex,
-        "sdpMid": candidate.sdpMid,
-        "type": "ice",
-        "server": _serverKey,
-        "client": _clientKey,
-        "createdAt": FieldValue.serverTimestamp(),
-      };
-      _db.collection("users/${_user!.uid}/server").add(data);
-    };
-
-    // On data chanel open
-    _connection.onDataChannel = (channel) {
-      debugPrint("onDataChannel");
-    };
-
-    _connection.onConnectionState = (state) {
-      _state = state;
-      notifyListeners();
-    };
 
     var collection = _db.collection("users/${_user!.uid}/client");
 
@@ -103,18 +76,49 @@ class WebRtcProvider with ChangeNotifier {
 
   Future<void> connect(Device device) async {
     _serverKey = device.key;
+    await _createPerrConnection();
     await _createDataChannel();
     await _createOffer();
   }
 
   Future<void> disconnect() async {
-    _dataChannel.close();
-    _connection.close();
+    await _dataChannel.close();
+    await _connection.close();
   }
 
   Future<void> send(String text) async {
     _dataChannel.send(RTCDataChannelMessage.fromBinary(
         Uint8List.fromList(utf8.encode(text))));
+  }
+
+  Future<void> _createPerrConnection() async {
+    _connection = await createPeerConnection(_connectionConfiguration);
+
+    // On local ice candidate add
+    _connection.onIceCandidate = (candidate) {
+      debugPrint("onIceCandidate: ${candidate.sdpMid}");
+
+      var data = {
+        "candidate": candidate.candidate,
+        "sdpMLineIndex": candidate.sdpMLineIndex,
+        "sdpMid": candidate.sdpMid,
+        "type": "ice",
+        "server": _serverKey,
+        "client": _clientKey,
+        "createdAt": FieldValue.serverTimestamp(),
+      };
+      _db.collection("users/${_user!.uid}/server").add(data);
+    };
+
+    // On data chanel open
+    _connection.onDataChannel = (channel) {
+      debugPrint("onDataChannel");
+    };
+
+    _connection.onConnectionState = (state) {
+      _state = state;
+      notifyListeners();
+    };
   }
 
   Future<void> _createOffer() async {
@@ -136,6 +140,7 @@ class WebRtcProvider with ChangeNotifier {
 
   Future<void> _createDataChannel() async {
     RTCDataChannelInit dataChannelDict = RTCDataChannelInit();
+    debugPrint("onMessage ${_connection.toString()}");
     _dataChannel = await _connection.createDataChannel("data", dataChannelDict);
 
     _dataChannel.onMessage = (data) {

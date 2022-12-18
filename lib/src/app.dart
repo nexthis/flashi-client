@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'controlers/mause_view.dart';
 import 'login/login_view.dart';
 import 'main/main_view.dart';
 import 'main/example/settings_view.dart';
@@ -94,6 +95,8 @@ class _MyAppState extends State<MyApp> {
           settings: routeSettings,
           builder: (BuildContext context) {
             switch (routeSettings.name) {
+              case MouseControl.routeName:
+                return const MouseControl();
               case MainView.routeName:
                 return const MainView();
               case LoginView.routeName:
