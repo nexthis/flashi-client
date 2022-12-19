@@ -10,15 +10,18 @@ import 'package:throttling/throttling.dart';
 class MouseControl extends StatefulWidget {
   const MouseControl({super.key});
 
-  static const routeName = '/controlers/mause';
+  static const routeName = '/controllers/mouse';
 
   @override
   State<MouseControl> createState() => _MouseControlState();
 }
 
 class _MouseControlState extends State<MouseControl> {
-  final throttling = Throttling(duration: const Duration(milliseconds: 2));
+  final _throttling = Throttling(duration: const Duration(milliseconds: 2));
   late Offset _lastPosition;
+  int _lastTap = DateTime.now().millisecondsSinceEpoch;
+  int _lastDoubleTap = DateTime.now().millisecondsSinceEpoch;
+  int _consecutiveTaps = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -27,33 +30,61 @@ class _MouseControlState extends State<MouseControl> {
         title: const Text('Control'),
       ),
       body: GestureDetector(
-        onPanUpdate: ((details) =>
-            throttling.throttle(() => _onPanUpdate(details, context))),
-        onPanStart: _onPanStart,
-        onDoubleTapDown: _onDoubleTapDown,
+        onScaleUpdate: ((details) =>
+            _throttling.throttle(() => _onScaleUpdate(details, context))),
+        onScaleStart: _onScaleStart,
       ),
     );
   }
 
-  void _onPanUpdate(DragUpdateDetails details, BuildContext context) {
-    double speedDx =
-        (details.localPosition.dx.abs() - _lastPosition.dx.abs()) / 0.8;
-    double speedDY =
-        (details.localPosition.dy.abs() - _lastPosition.dy.abs()) / 0.8;
+  void _onScaleUpdate(ScaleUpdateDetails details, BuildContext context) {
+    double speedDx = (details.focalPoint.dx.abs() - _lastPosition.dx.abs()) /
+        0.8; //0.8 = sensitive
+    double speedDY = (details.focalPoint.dy.abs() - _lastPosition.dy.abs()) /
+        0.8; //0.8 = sensitive
 
-    double x = (details.localPosition.dx - _lastPosition.dx) + speedDx;
-    double y = (details.localPosition.dy - _lastPosition.dy) + speedDY;
-    debugPrint("speed: $speedDx $speedDY");
+    double x = (details.focalPoint.dx - _lastPosition.dx) + speedDx;
+    double y = (details.focalPoint.dy - _lastPosition.dy) + speedDY;
+    //debugPrint("speed: $speedDx $speedDY");
 
     //context.read<WebRtcProvider>().send("move_relative $x $y");
-    _lastPosition = details.localPosition;
+    _lastPosition = details.focalPoint;
   }
 
-  void _onDoubleTapDown(TapDownDetails details) {
-    debugPrint("index: XDD");
+  void _onScaleStart(ScaleStartDetails details) {
+    int now = DateTime.now().millisecondsSinceEpoch;
+    //check if user tap faster that 300ms
+    if (now - _lastTap < 300) {
+      _consecutiveTaps++;
+
+      //Recognize is one or two fingers
+      if (details.pointerCount >= 2) {
+        _lastDoubleTap = DateTime.now().millisecondsSinceEpoch;
+        _onDoubleTapTwoFingers(details);
+      }
+      if (_consecutiveTaps == 1 &&
+          _lastDoubleTap - now < 300 &&
+          details.pointerCount == 1) {
+        _onDoubleTap(details);
+      }
+
+      //clear counter <- is good for now, remember to change this if you needed
+      _consecutiveTaps = 0;
+    } else {
+      _consecutiveTaps = 0;
+    }
+
+    _lastPosition = details.focalPoint;
+    _lastTap = now;
   }
 
-  void _onPanStart(DragStartDetails details) {
-    _lastPosition = details.localPosition;
+  void _onDoubleTap(ScaleStartDetails details) {
+    debugPrint("_onDoubleTap");
+    // context.read<WebRtcProvider>().send("move_click left");
+  }
+
+  void _onDoubleTapTwoFingers(ScaleStartDetails details) {
+    debugPrint("_onDoubleTapTwoFingers");
+    // context.read<WebRtcProvider>().send("move_click right");
   }
 }
