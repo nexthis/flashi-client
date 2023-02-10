@@ -1,4 +1,6 @@
 import 'package:flashi_client/src/controlers/mause_view.dart';
+import 'package:flashi_client/src/controlers/music_view.dart';
+import 'package:flashi_client/src/controlers/presentation_view.dart';
 import 'package:flashi_client/src/widgets/connect_button.dart';
 import 'package:flutter/material.dart';
 
@@ -16,26 +18,85 @@ class DashboardView extends StatelessWidget {
       ),
       body: GridView.count(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+        crossAxisSpacing: 5,
+        mainAxisSpacing: 5,
         crossAxisCount: 2,
         primary: false,
-        children: [
-          _controlCard(context),
-          const Card(
-            color: Colors.orangeAccent,
-            child: Text("asd"),
-          ),
-          const Card(
-            color: Colors.purpleAccent,
-            child: Text("asd"),
-          ),
-        ],
+        children: const [ControlCard(), PresentationCard(), MusicCard()],
       ),
     );
   }
+}
 
-  Widget _controlCard(BuildContext context) {
+class PresentationCard extends StatelessWidget {
+  const PresentationCard({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.orangeAccent,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed(PresentationControl.routeName);
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.co_present_rounded,
+              size: 50,
+            ),
+            Text(
+              "Presentation",
+              style: Theme.of(context).textTheme.headline6,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MusicCard extends StatelessWidget {
+  const MusicCard({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.purpleAccent,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed(MusicControl.routeName);
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.video_settings_sharp,
+              size: 50,
+            ),
+            Text(
+              "Music",
+              style: Theme.of(context).textTheme.headline6,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ControlCard extends StatelessWidget {
+  const ControlCard({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       color: Colors.blueAccent,
       child: InkWell(

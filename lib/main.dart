@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flashi_client/src/providers/webrtc.dart';
 import 'package:flashi_client/src/services/firestore.dart';
@@ -20,6 +21,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  MobileAds.instance.initialize();
   FirestoreService().registry();
   // Ideal time to initialize
   //await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
