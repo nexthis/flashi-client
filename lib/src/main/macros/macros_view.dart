@@ -8,8 +8,15 @@ import 'package:provider/provider.dart';
 
 import '../../providers/webrtc.dart';
 
-class MacrosView extends StatelessWidget {
+class MacrosView extends StatefulWidget {
   const MacrosView({super.key});
+
+  @override
+  State<MacrosView> createState() => _MacrosViewState();
+}
+
+class _MacrosViewState extends State<MacrosView> {
+  Future<List<Macro>> _data = FirestoreService().macros();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,7 @@ class MacrosView extends StatelessWidget {
         ],
       ),
       body: FutureBuilder<List<Macro>>(
-        future: FirestoreService().macros(),
+        future: _data,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container();
@@ -36,7 +43,11 @@ class MacrosView extends StatelessWidget {
                   return MacroItem(macro: macros[index]);
                 },
               ),
-              onRefresh: () => Future.delayed(const Duration(seconds: 1)),
+              onRefresh: () async {
+                setState(() {
+                  _data = FirestoreService().macros();
+                });
+              },
             );
           } else {
             return const Text(

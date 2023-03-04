@@ -1,7 +1,9 @@
 import 'package:flashi_client/src/login/login_controller.dart';
+import 'package:flashi_client/src/providers/webrtc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:provider/provider.dart';
 import '../services/auth.dart';
 import '../main/example/settings_view.dart';
 
@@ -92,8 +94,8 @@ class _LoginViewState extends State<LoginView> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () => {
-                    controller.login(
-                        emailController.text, passwordController.text)
+                    controller.login(emailController.text,
+                        passwordController.text, context.read<WebRtcProvider>())
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(50),

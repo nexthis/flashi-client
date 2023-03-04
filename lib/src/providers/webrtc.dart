@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,6 +29,7 @@ class WebRtcProvider with ChangeNotifier {
   late RTCDataChannel _dataChannel;
   late RTCPeerConnection _connection;
   late RTCSessionDescription _sdp;
+  bool isInit = false;
   String _serverKey = "";
   String _clientKey = "";
   RTCPeerConnectionState _state =
@@ -38,6 +40,10 @@ class WebRtcProvider with ChangeNotifier {
   Future<void> initPeerConnection() async {
     var device = await DeviceInfo().registry();
     _clientKey = device.key;
+
+    if (_user == null) {
+      return;
+    }
 
     var collection = _db.collection("users/${_user!.uid}/client");
 
@@ -72,6 +78,7 @@ class WebRtcProvider with ChangeNotifier {
         }
       }
     });
+    isInit = true;
   }
 
   Future<void> connect(Device device) async {
@@ -145,6 +152,12 @@ class WebRtcProvider with ChangeNotifier {
 
     _dataChannel.onMessage = (data) {
       debugPrint("onMessage ${data.text}");
+      if (data.text == "XDDD") {
+        send('''
+        variant: answer
+        ---BODY---
+          yes''');
+      }
     };
 
     _dataChannel.onDataChannelState = (state) {

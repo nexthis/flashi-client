@@ -7,12 +7,12 @@ class AuthService {
   final user = FirebaseAuth.instance.currentUser;
 
   Future<UserCredential> login(String email, String password) async {
-    var test = await FirebaseAuth.instance
+    var auth = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
 
-    debugPrint('movieTitle: $test');
+    debugPrint('movieTitle: $auth');
 
-    return test;
+    return auth;
   }
 
   Future<void> signOut() async {

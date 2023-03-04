@@ -84,8 +84,12 @@ class _MouseControlState extends State<MouseControl> {
               onScaleUpdate: ((details) =>
                   _throttling.throttle(() => _onScaleUpdate(details, context))),
               onScaleStart: _onScaleStart,
-              onTap: _onLeftButtonClick,
-              onDoubleTap: _onRightButtonClick,
+              onTap: () {
+                _onButtonClick("left");
+              },
+              onDoubleTap: () {
+                _onButtonClick("right");
+              },
             ),
           ),
           _bottomNavigation(context),
@@ -106,7 +110,12 @@ class _MouseControlState extends State<MouseControl> {
             child: Material(
               color: Theme.of(context).colorScheme.onPrimary,
               child: InkWell(
-                onTap: _onLeftButtonClick,
+                onTapDown: (details) {
+                  _onButtonDown('left');
+                },
+                onTapUp: (details) {
+                  _onButtonUp('left');
+                },
               ),
             ),
           ),
@@ -115,7 +124,12 @@ class _MouseControlState extends State<MouseControl> {
             child: Material(
               color: Theme.of(context).colorScheme.primary,
               child: InkWell(
-                onTap: _onMiddleButtonClick,
+                onTapDown: (details) {
+                  _onButtonDown('middle');
+                },
+                onTapUp: (details) {
+                  _onButtonUp('middle');
+                },
               ),
             ),
           ),
@@ -125,7 +139,12 @@ class _MouseControlState extends State<MouseControl> {
             child: Material(
               color: Theme.of(context).colorScheme.onPrimary,
               child: InkWell(
-                onTap: _onRightButtonClick,
+                onTapDown: (details) {
+                  _onButtonDown('right');
+                },
+                onTapUp: (details) {
+                  _onButtonUp('right');
+                },
               ),
             ),
           )
@@ -135,39 +154,41 @@ class _MouseControlState extends State<MouseControl> {
   }
 
   void _onScaleUpdate(ScaleUpdateDetails details, BuildContext context) {
-    double speedDx = (details.focalPoint.dx.abs() - _lastPosition.dx.abs()) /
-        0.8; //0.8 = sensitive
-    double speedDY = (details.focalPoint.dy.abs() - _lastPosition.dy.abs()) /
-        0.8; //0.8 = sensitive
+    double speedDx = (details.focalPoint.dx.abs() - _lastPosition.dx.abs()) *
+        1.5; //0.3 = sensitive
+    double speedDY = (details.focalPoint.dy.abs() - _lastPosition.dy.abs()) *
+        1.5; //0.3 = sensitive
 
-    double x = (details.focalPoint.dx - _lastPosition.dx) + speedDx;
-    double y = (details.focalPoint.dy - _lastPosition.dy) + speedDY;
+    int x = ((details.focalPoint.dx - _lastPosition.dx) + speedDx).round();
+    int y = ((details.focalPoint.dy - _lastPosition.dy) + speedDY).round();
     debugPrint("speed: $speedDx $speedDY");
-
+    if (x == 0 && y == 0) {
+      return;
+    }
     context.read<WebRtcProvider>().send("move_relative $x $y");
     _lastPosition = details.focalPoint;
+  }
+
+  void _onButtonDown(String key) {
+    context.read<WebRtcProvider>().send("mouse_down $key");
+  }
+
+  void _onButtonUp(String key) {
+    context.read<WebRtcProvider>().send("mouse_up $key");
+  }
+
+  void _onButtonClick(String key) {
+    context.read<WebRtcProvider>().send("mouse_click $key");
   }
 
   void _onScaleStart(ScaleStartDetails details) {
     _lastPosition = details.focalPoint;
   }
 
-  void _onLeftButtonClick() {
-    context.read<WebRtcProvider>().send("move_click left");
-  }
-
-  void _onMiddleButtonClick() {
-    context.read<WebRtcProvider>().send("move_click middle");
-  }
-
-  void _onRightButtonClick() {
-    context.read<WebRtcProvider>().send("move_click right");
-  }
-
   void _onKeyPress(TextEditingValue value) {
     debugPrint("value: ${value.text[value.text.length - 1]}");
     context
         .read<WebRtcProvider>()
-        .send("press ${value.text[value.text.length - 1]}");
+        .send("typing ${value.text[value.text.length - 1]}");
   }
 }
