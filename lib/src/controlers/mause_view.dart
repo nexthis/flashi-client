@@ -21,6 +21,7 @@ class _MouseControlState extends State<MouseControl> {
   final TextEditingController _editingController = TextEditingController();
   late FocusNode _node;
   late Offset _lastPosition;
+  int _lastLength = 0;
   bool isShowKeyboard = false;
 
   @override
@@ -28,14 +29,15 @@ class _MouseControlState extends State<MouseControl> {
     super.initState();
     _node = FocusNode(debugLabel: 'TextArea');
     _editingController.addListener(() {
-      final TextEditingValue value = _editingController.value;
-      _onKeyPress(value);
+      _onKeyPress();
     });
     _node.addListener(() {
       if (_node.hasFocus) {
         return;
       }
       _editingController.clear();
+      _lastLength = 0;
+
       setState(() {
         isShowKeyboard = !isShowKeyboard;
       });
@@ -154,14 +156,28 @@ class _MouseControlState extends State<MouseControl> {
   }
 
   void _onScaleUpdate(ScaleUpdateDetails details, BuildContext context) {
-    double speedDx = (details.focalPoint.dx.abs() - _lastPosition.dx.abs()) *
-        1.5; //0.3 = sensitive
-    double speedDY = (details.focalPoint.dy.abs() - _lastPosition.dy.abs()) *
-        1.5; //0.3 = sensitive
+    if (details.pointerCount == 2) {
+      debugPrint("speed: ${details.scale}");
+      return;
+    }
 
-    int x = ((details.focalPoint.dx - _lastPosition.dx) + speedDx).round();
-    int y = ((details.focalPoint.dy - _lastPosition.dy) + speedDY).round();
-    debugPrint("speed: $speedDx $speedDY");
+    _mouseMove(details);
+  }
+
+  void _mouseMove(ScaleUpdateDetails details) {
+    // double speedDx = (details.focalPoint.dx - _lastPosition.dx).abs() *
+    //     0.3; //0.3 = sensitive
+    // double speedDY = (details.focalPoint.dy - _lastPosition.dy).abs() *
+    //     0.3; //0.3 = sensitive
+
+    double speed = max((details.focalPoint.dx - _lastPosition.dx).abs(),
+            (details.focalPoint.dy - _lastPosition.dy).abs()) *
+        0.4;
+
+    int x = ((details.focalPoint.dx - _lastPosition.dx) * speed).round();
+    int y = ((details.focalPoint.dy - _lastPosition.dy) * speed).round();
+
+    debugPrint("speed: $speed x: $x y: $y");
     if (x == 0 && y == 0) {
       return;
     }
@@ -185,10 +201,17 @@ class _MouseControlState extends State<MouseControl> {
     _lastPosition = details.focalPoint;
   }
 
-  void _onKeyPress(TextEditingValue value) {
-    debugPrint("value: ${value.text[value.text.length - 1]}");
-    context
-        .read<WebRtcProvider>()
-        .send("typing ${value.text[value.text.length - 1]}");
+  void _onKeyPress() {
+    Characters characters = _editingController.text.characters;
+
+    debugPrint("value: $_lastLength ${characters.length}");
+
+    if (_lastLength > characters.length) {
+      context.read<WebRtcProvider>().send('key_press backspace');
+    } else {
+      context.read<WebRtcProvider>().send('typing "${characters.last}"');
+    }
+
+    _lastLength = characters.length;
   }
 }

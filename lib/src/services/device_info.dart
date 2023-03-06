@@ -15,8 +15,14 @@ class DeviceInfo {
 
       var bytes = utf8.encode(info.fingerprint);
       var digest = sha256.convert(bytes);
+      //info.brand
 
-      return Device(key: digest.toString(), name: info.display, os: "android");
+      debugPrint("INFO: ${info.toString()}");
+
+      return Device(
+          key: digest.toString(),
+          name: "${info.brand} (${info.model})",
+          os: "android");
     }
 
     if (Platform.isIOS) {
